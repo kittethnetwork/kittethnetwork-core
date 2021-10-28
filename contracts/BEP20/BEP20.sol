@@ -19,24 +19,17 @@ contract BEP20Token is Context, IBEP20, Ownable {
   string private _symbol;
   string private _name;
 
-  /*
-  constructor() public {
-    _name = {{TOKEN_NAME}};
-    _symbol = {{TOKEN_SYMBOL}};
-    _decimals = {{DECIMALS}};
-    _totalSupply = {{TOTAL_SUPPLY}};
+  
+  constructor(string memory inName, string memory inSymbol, uint8 inDecimals, uint256 inTotalSupply ) {
+    _name = inName;
+    _symbol = inSymbol;
+    _decimals = inDecimals;
+    _totalSupply = inTotalSupply;
     _balances[msg.sender] = _totalSupply;
 
     emit Transfer(address(0), msg.sender, _totalSupply);
   }
-  */
-
-  constructor(string memory name, string memory symbol) public {
-      _name = name;
-      _symbol = symbol;
-      _decimals = 18;
-  }
-
+  
   /**
    * @dev Returns the bep token owner.
    */
