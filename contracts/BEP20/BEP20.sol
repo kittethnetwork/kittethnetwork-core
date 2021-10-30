@@ -1,3 +1,4 @@
+// https://github.com/binance-chain/bsc-genesis-contract/blob/master/contracts/bep20_template/BEP20Token.template
 // SPDX-License-Identifier: MIT
 
 pragma solidity >=0.6.0;
