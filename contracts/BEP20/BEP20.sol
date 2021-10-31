@@ -81,7 +81,7 @@ contract BEP20Token is Context, IBEP20, Ownable {
    * - `recipient` cannot be the zero address.
    * - the caller must have a balance of at least `amount`.
    */
-  function transfer(address recipient, uint256 amount) external returns (bool) {
+  function transfer(address recipient, uint256 amount) external virtual returns (bool) {
     _transfer(_msgSender(), recipient, amount);
     return true;
   }
@@ -167,7 +167,7 @@ contract BEP20Token is Context, IBEP20, Ownable {
    *
    * - `msg.sender` must be the token owner
    */
-  function mint(uint256 amount) public onlyOwner returns (bool) {
+  function mint(uint256 amount) public virtual onlyOwner returns (bool) {
     _mint(_msgSender(), amount);
     return true;
   }
@@ -261,5 +261,15 @@ contract BEP20Token is Context, IBEP20, Ownable {
   function _burnFrom(address account, uint256 amount) internal {
     _burn(account, amount);
     _approve(account, _msgSender(), _allowances[account][_msgSender()].sub(amount, "BEP20: burn amount exceeds allowance"));
+  }
+
+  /**
+   * @dev Destroys `amount` tokens from `account`.`amount` is then deducted
+   * from the caller's allowance.
+   *
+   * See {_burn} and {_approve}.
+   */
+  function _getTotalSupply() internal view returns(uint256) {
+    return _totalSupply;
   }
 }
