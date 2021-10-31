@@ -23,7 +23,7 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
     /* Fees and reflection */
     uint256 private constant _maxFee = 5;                       // Max Fee Is Only For Clarification For Fees Being Applied
     uint256 private constant _charityFee = 2;                   // Charity Fee Is Initally 2% Once Burn Is Below _minTokens, _burnFee will be applied to Charity Wallet
-    uint256 private constant _reflectionFee = 2;                   // Reflection, for every transaction 2% will be reflected back at all token holders
+    uint256 private constant _reflectionFee = 2;                // Reflection, for every transaction 2% will be reflected back at all token holders
     uint256 private constant _burnFee = 1;                      // Burn Fee Is Initally 1% Once Burn Is Below _minTokens, _burnFee will be applied to Charity Wallet
 
     /* Pancake Swap Variables */
@@ -35,6 +35,7 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
 
     /* Internal Variables */
     bool private _burnEn = true;                                // Auto Burn Enabled, Only disabled after reaching minimum tokens for circulation
+    address private _charityAddress;
 
     constructor() {
         // Create router variable with Pancake Router Address - If Pancake Swap Is Upreved in Future migration will have to be done under new contract
@@ -56,7 +57,8 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
 
     // Override The Transfer Function
     // Modified To Allow For Fees To Be Used
-    function transfer(address recipient, uint256 amount) external override returns (bool) {
+    function transfer(address recipient, uint256 amount) external override returns (bool result) {
+        result = false;
         require(amount > 0, "Transfer Amount Is Set To 0"); // Send Message - Caller If Amount Is Set To Zero
         address _sender = _msgSender();
         address _recipient = recipient;
@@ -71,18 +73,29 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
         // Verify The Amounts Are Less Than the Amount To Send
         _totalAmt = _totalAmt.add(_charityAmt);
         _totalAmt = _totalAmt.add(_reflectAmt);
-
-
         _totalAmt = _totalAmt.add(_burnAmt);
-
-        require(amount > _totalAmt, "Transfer Amount Less Than The _totalAmt");
-        _transfer(_sender, _recipient, _charityAmt);
         
-        //_transfer(_sender, , _charityAmt);
-        _burn(_recipient, _burnAmt);
+        if (_burnEn) {
+            (uint256 _burnToken, bool lastBurn) = _checkBurn(_burnAmt);
 
-        //_transfer(_msgSender(), recipient, amount);
-        return true;
+            if (lastBurn){
+                _charityAmt = _charityAmt.add(_burnToken);
+                _burnAmt = _burnAmt.sub(_burnToken);
+            }
+            require(amount > _totalAmt, "Transfer Amount Less Than The _totalAmt");
+            _amount = _amount.sub(_totalAmt);
+            _transfer(_sender, _recipient, _amount);
+            _transfer(_sender, _charityAddress, _charityAmt);
+            _burn(_recipient, _burnAmt);
+
+        } else {
+            require(amount > _totalAmt, "Transfer Amount Less Than The _totalAmt");
+            _amount = _amount.sub(_totalAmt);
+            _transfer(_sender, _recipient, _amount);
+            _transfer(_sender, _charityAddress, _charityAmt);
+            _transfer(_sender, _charityAddress, _burnAmt);
+        }
+        result = true;
     }
 
 
@@ -102,9 +115,9 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
         // Check If totalSupply - amount is less than minimum number of tokens
         if ((_totalSupply - amount) <= _minTokens) {
             _burnEn = false;                            // Remove
-            return((_totalSupply - _minTokens), false);
+            return((_totalSupply - _minTokens), true);
         } else {
-            return (0, true);
+            return (0, false);
         }
     }
 }
