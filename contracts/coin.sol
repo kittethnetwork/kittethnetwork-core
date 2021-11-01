@@ -4,11 +4,9 @@ pragma solidity >=0.6.4;
 
 import './BEP20/BEP20.sol';
 import './math/SafeMath.sol';
-import './Pancake/IPancakeRouter02.sol';
-import './Pancake/IPancakeFactory.sol';
-import './Pancake/IPancakePair.sol';
 
 // KittethCoin - The Coin To Help The Ocean, Environment and Animals of Ireland and Beyond!!!
+// A Simple Token - With A Simple Mechanism, Transfer 2% To Charity Wallet, 1% Developer Fee, 1% Burn Fee Until Below Minimum Tokens
 // Please feel free to use or audit this code as you see fit!
 // BEP20Token(_name, _symbol, _decimal, _totalSupply)
 contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 420000000000000000) {
@@ -21,28 +19,17 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
     uint256 private constant _minTokens = 1000000000000;        //Minimum Amount Of Tokens Allowed In Circulation - 1 Trillion Kitteth Coins
 
     /* Fees and reflection */
-    uint256 private constant _maxFee = 5;                       // Max Fee Is Only For Clarification For Fees Being Applied
+    uint256 private constant _maxFee = 4;                       // Max Fee Is Only For Clarification For Fees Being Applied
     uint256 private constant _charityFee = 2;                   // Charity Fee Is Initally 2% Once Burn Is Below _minTokens, _burnFee will be applied to Charity Wallet
-    uint256 private constant _reflectionFee = 2;                // Reflection, for every transaction 2% will be reflected back at all token holders
+    uint256 private constant _developerFee = 1;                 // Developer, for every transaction 1% will be transfered to the Developer wallet
     uint256 private constant _burnFee = 1;                      // Burn Fee Is Initally 1% Once Burn Is Below _minTokens, _burnFee will be applied to Charity Wallet
-
-    /* Pancake Swap Variables */
-    /* Pancake Router Address is found here - https://docs.pancakeswap.finance/code/smart-contracts/pancakeswap-exchange/router-v2 */
-    /* Current Router Address is - 0x10ED43C718714eb63d5aA57B78B54704E256024E */
-    address private constant _pancakeRouterAddress = 0x10ED43C718714eb63d5aA57B78B54704E256024E;
-    address public immutable _pancakeLPTokenAddress;            // Address Generated On Creation Of Contract
-    IPancakeRouter02 public immutable _pancakeRouter;
 
     /* Internal Variables */
     bool private _burnEn = true;                                // Auto Burn Enabled, Only disabled after reaching minimum tokens for circulation
     address private _charityAddress;
 
     constructor() {
-        // Create router variable with Pancake Router Address - If Pancake Swap Is Upreved in Future migration will have to be done under new contract
-        _pancakeRouter = IPancakeRouter02(_pancakeRouterAddress);
-        // Creation of pancake LP pairing
-        _pancakeLPTokenAddress = IPancakeFactory(_pancakeRouter.factory()).createPair(address(this), _pancakeRouter.WETH());
-        // Upon Completion with BEP20Token standard library we will have both the PancakeSwap Token, and our minted Tokens!!!
+        // Dead Constructor For Placeholding
     }
 
     /* Override Section */
@@ -63,38 +50,38 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 42000000000000
         address _sender = _msgSender();
         address _recipient = recipient;
         uint256 _amount = amount;
-        uint256 _totalAmt = 0;
+        uint256 _totalFee = 0;
 
         // Obtain Values To Various Amounts
         uint256 _charityAmt = _calcFee(_amount, _charityFee);
-        uint256 _reflectAmt = _calcFee(_amount, _reflectionFee);
+        uint256 _developAmt = _calcFee(_amount, _developerFee);
         uint256 _burnAmt = _calcFee(_amount, _burnFee);
 
         // Verify The Amounts Are Less Than the Amount To Send
-        _totalAmt = _totalAmt.add(_charityAmt);
-        _totalAmt = _totalAmt.add(_reflectAmt);
-        _totalAmt = _totalAmt.add(_burnAmt);
+        _totalFee = _totalFee.add(_charityAmt);
+        _totalFee = _totalFee.add(_developAmt);
+        _totalFee = _totalFee.add(_burnAmt);
         
+        // Check If On The Burn Is Still Enabled
         if (_burnEn) {
             (uint256 _burnToken, bool lastBurn) = _checkBurn(_burnAmt);
 
-            if (lastBurn){
+            if (lastBurn){ // If Last Burn Was Found
                 _charityAmt = _charityAmt.add(_burnToken);
                 _burnAmt = _burnAmt.sub(_burnToken);
             }
-            require(amount > _totalAmt, "Transfer Amount Less Than The _totalAmt");
-            _amount = _amount.sub(_totalAmt);
-            _transfer(_sender, _recipient, _amount);
-            _transfer(_sender, _charityAddress, _charityAmt);
+
+            require(amount > _totalFee, "Transfer Amount Less Than The _totalAmt");
             _burn(_recipient, _burnAmt);
 
-        } else {
-            require(amount > _totalAmt, "Transfer Amount Less Than The _totalAmt");
-            _amount = _amount.sub(_totalAmt);
-            _transfer(_sender, _recipient, _amount);
-            _transfer(_sender, _charityAddress, _charityAmt);
-            _transfer(_sender, _charityAddress, _burnAmt);
+        } else { // Add Burn Amount To Charity Amount Since 
+            _charityAmt = _charityAmt.add(_burnAmt);
         }
+
+        require(amount > _totalFee, "Transfer Amount Less Than The _totalAmt");
+        _amount = _amount.sub(_totalFee);
+        _transfer(_sender, _recipient, _amount);
+        _transfer(_sender, _charityAddress, _charityAmt);
         result = true;
     }
 
