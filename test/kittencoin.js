@@ -42,17 +42,34 @@ contract("KittethCoin", (accounts) => {
     })
 
     it("Transfer Should Happen Here", async () => {
-        let value = await instance.transfer.call(accounts[1], 100, {from: accounts[0]});
+        await instance.transfer(accounts[1], 100);
+    })
 
-        assert.equal(value, true, "Transfer is Not Complete");
+    it("Balance of Account 0: ", async () => {
+        const value = await instance.balanceOf.call(accounts[0]);
 
-        const value2 = await instance.balanceOf.call(accounts[1]);
+        assert.equal(value, 1e12 - 100);
+    })
 
-        assert.equal(value2, 100, "Woof 1: " + value2);
+    it("Balance of Account 1", async () => {
+        const value = await instance.balanceOf.call(accounts[1]);
 
-        const value3 = await instance.balanceOf.call(accounts[0]);
+        assert.equal(value, 100);
+    })
 
-        assert.equal(value3, 100, "Woof 2: " + value3);
+    it("Transfer Should Happen Here", async () => {
+        await instance.transfer(accounts[2], 200);
+    })
 
+    it("Balance of Account 0: ", async () => {
+        const value = await instance.balanceOf.call(accounts[0]);
+
+        assert.equal(value, 1e12 - 300);
+    })
+
+    it("Balance of Account 2", async () => {
+        const value = await instance.balanceOf.call(accounts[2]);
+
+        assert.equal(value, 200);
     })
 })
