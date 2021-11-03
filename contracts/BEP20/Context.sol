@@ -1,31 +1,25 @@
 // https://github.com/binance-chain/bsc-genesis-contract/blob/master/contracts/bep20_template/BEP20Token.template
 // SPDX-License-Identifier: MIT
+// OpenZeppelin Contracts v4.3.2 (utils/Context.sol)
 
-pragma solidity >=0.6.0;
+pragma solidity ^0.8.0;
 
-/*
+/**
  * @dev Provides information about the current execution context, including the
  * sender of the transaction and its data. While these are generally available
  * via msg.sender and msg.data, they should not be accessed in such a direct
- * manner, since when dealing with GSN meta-transactions the account sending and
+ * manner, since when dealing with meta-transactions the account sending and
  * paying for execution may not be the actual sender (as far as an application
  * is concerned).
  *
  * This contract is only required for intermediate, library-like contracts.
  */
-contract Context {
-  // Empty internal constructor, to prevent people from mistakenly deploying
-  // an instance of this contract, which should be used via inheritance.
-  // constructor () internal { }
-  constructor () { }  // Removed Internal To Get Solidity To Remove Warning
+abstract contract Context {
+    function _msgSender() internal view virtual returns (address) {
+        return msg.sender;
+    }
 
-  // function _msgSender() internal view returns (address payable) {
-  function _msgSender() internal view returns (address) { // Removed Payable To Get Solidity To Remove Warning
-    return msg.sender;
-  }
-
-  function _msgData() internal view returns (bytes memory) {
-    this; // silence state mutability warning without generating bytecode - see https://github.com/ethereum/solidity/issues/2691
-    return msg.data;
-  }
+    function _msgData() internal view virtual returns (bytes calldata) {
+        return msg.data;
+    }
 }

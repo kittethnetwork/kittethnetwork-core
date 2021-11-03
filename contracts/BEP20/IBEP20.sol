@@ -1,7 +1,7 @@
 // https://github.com/binance-chain/bsc-genesis-contract/blob/master/contracts/bep20_template/BEP20Token.template
 // SPDX-License-Identifier: MIT
 
-pragma solidity >=0.6.0;
+pragma solidity ^0.8.0;
 
 interface IBEP20 {
   /**
@@ -50,7 +50,7 @@ interface IBEP20 {
    *
    * This value changes when {approve} or {transferFrom} are called.
    */
-  function allowance(address _owner, address spender) external view returns (uint256);
+  function allowance(address owner, address spender) external view returns (uint256);
 
   /**
    * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.

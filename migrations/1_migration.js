@@ -1,5 +1,5 @@
-const Migrations = artifacts.require("./kittethcoin.sol");
+const KittethCoin = artifacts.require("KittethCoin");
 
 module.exports = function (deployer) {
-  deployer.deploy(Migrations);
+  deployer.deploy(KittethCoin);
 };

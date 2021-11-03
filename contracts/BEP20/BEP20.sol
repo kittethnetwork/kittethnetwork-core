@@ -81,7 +81,7 @@ contract BEP20Token is Context, IBEP20, Ownable {
    * - `recipient` cannot be the zero address.
    * - the caller must have a balance of at least `amount`.
    */
-  function transfer(address recipient, uint256 amount) external virtual returns (bool) {
+  function transfer(address recipient, uint256 amount) external returns (bool) {
     _transfer(_msgSender(), recipient, amount);
     return true;
   }
