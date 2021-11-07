@@ -8,7 +8,7 @@ import './BEP20/BEP20.sol';
 // A Simple Token - With A Simple Mechanism, Transfer 1% To Charity Wallet
 // Please feel free to use or audit this code as you see fit!
 // BEP20Token(_name, _symbol, _decimal, _totalSupply)
-contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18) {
+contract KittethCoin is BEP20Token {
     /* Declarations */
     /* Constants */
     /* Supply */
@@ -16,9 +16,9 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18) {
 
     /* CharityFee */
     uint256 private constant _charityFee = 1;           // Charity Fee Is 1%
-    address private constant _charityAddress = 0x5299B63fdc1705FA0acE8E984026a04CE0C27c01; // Test Address currently - update for the real address
+    address private constant _charityAddress = 0xfFcb326F0f8b245ebb1a0e5cccdb94c4c3433ED0; // Test Address currently - update for the real address
 
-    constructor () {
+    constructor () BEP20Token('KittethCoin', 'KITTCOIN', 18) {
         _mint(_msgSender(), _tokens);
     }
 
