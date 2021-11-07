@@ -16,7 +16,7 @@ contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18) {
 
     /* CharityFee */
     uint256 private constant _charityFee = 1;           // Charity Fee Is 1%
-    address private constant _charityAddress = 0x34C64d369a4197Dd3F1870D13B494aD9143A0c4c; // Test Address currently - update for the real address
+    address private constant _charityAddress = 0x5299B63fdc1705FA0acE8E984026a04CE0C27c01; // Test Address currently - update for the real address
 
     constructor () {
         _mint(_msgSender(), _tokens);
