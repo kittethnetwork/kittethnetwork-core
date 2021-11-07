@@ -1,1 +1,0 @@
-All Contracts Obtained At Pancake Swap, as we will be working with them using their curated code seems prudent

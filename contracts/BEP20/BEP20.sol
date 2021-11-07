@@ -4,8 +4,8 @@
 
 pragma solidity ^0.8.0;
 
-import './Context.sol';
-import './Ownable.sol';
+import '../utils/Context.sol';
+import '../utils/Ownable.sol';
 import './IBEP20.sol';
 
 contract BEP20Token is Context, IBEP20, Ownable {
