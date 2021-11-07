@@ -8,40 +8,39 @@ import './BEP20/BEP20.sol';
 // A Simple Token - With A Simple Mechanism, Transfer 1% To Charity Wallet
 // Please feel free to use or audit this code as you see fit!
 // BEP20Token(_name, _symbol, _decimal, _totalSupply)
-contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18, 1000000000000) {
+contract KittethCoin is BEP20Token('KittethCoin', 'KITTCOIN', 18) {
     /* Declarations */
     /* Constants */
     /* Supply */
-    uint256 private constant _tokens = 1000000000000;   //Maximum Amount Of Tokens Allowed In Circulation - 420 Quadrillion Kitteth Coins
+    uint256 private constant _tokens = 1000000000000;   //Maximum Amount Of Tokens Allowed In Circulation - 1 Quadrillion Kitteth Coins
 
     /* CharityFee */
-    uint256 private constant _charityFee = 1;                   // Charity Fee Is 2%
-    address private constant _charityAddress = 0x566efBa4Cbac49FFC387e97Ebd0622DB01B789BE;
+    uint256 private constant _charityFee = 1;           // Charity Fee Is 1%
+    address private constant _charityAddress = 0x34C64d369a4197Dd3F1870D13B494aD9143A0c4c; // Test Address currently - update for the real address
+
+    constructor () {
+        _mint(_msgSender(), _tokens);
+    }
 
     /* Override Section */
     /* Override Standard Functions From The BEP20Token */
 
     // Override The Transfer Function
     // Modified To Allow For Charity To Be Used
-    /*function transfer(address recipient, uint256 amount) external override returns (bool) {
-        require(amount > 0, "Transfer Amount Is Set To 0"); // Send Message - Caller If Amount Is Set To Zero
-        address _sender = _msgSender();
-        address _recipient = recipient;
-        uint256 _amount = amount;
-        uint256 _charityAmt = _calcFee(_amount, _charityFee);
+    function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
+        require(amount > 0, "Transfer Amount Is Set To 0");
+        uint256 _charityAmt = _calcFee(amount, _charityFee);
+        uint256 _amount = amount - _charityAmt;
 
-        require(amount > _charityAmt, "Transfer Amount Less Than The _charityAmt");
-        _amount = _amount.sub(_charityAmt);
-        _transfer(_sender, _recipient, _amount);
-        _transfer(_sender, _charityAddress, _charityAmt);
+        _transfer(_msgSender(), recipient, _amount);
+        _transfer(_msgSender(), _charityAddress, _charityAmt);
         return true;
-    }*/
+    }
 
     /* Standard Functions */
     /* SF - Are Used In This Contract To Give Functionality Not Normally Within A BEP20 Token
     /* Used To Calculate The Tax Fee Due To Integer Maths, Multiply By The Fee, Then Divide By 100 To Get The Percent To Subtract*/
-    /*
     function _calcFee(uint256 amount, uint256 fee) private pure returns (uint256) {
-        return amount.mul(fee).div(100);
-    }*/
+        return ((amount * fee) / 100);
+    }
 }

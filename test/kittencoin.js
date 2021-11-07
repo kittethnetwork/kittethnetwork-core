@@ -54,8 +54,14 @@ contract("KittethCoin", (accounts) => {
     it("Balance of Account 1", async () => {
         const value = await instance.balanceOf.call(accounts[1]);
 
-        assert.equal(value, 100);
+        assert.equal(value, 99); // Verify The Charity Transfer Occured
     })
+
+    it("Balance of Charity Account", async () => {
+        const value = await instance.balanceOf.call(accounts[9]);
+
+        assert.equal(value, 1); // Verify The Charity Transfer Occured
+    })   
 
     it("Transfer Should Happen Here", async () => {
         await instance.transfer(accounts[2], 200);
@@ -70,6 +76,12 @@ contract("KittethCoin", (accounts) => {
     it("Balance of Account 2", async () => {
         const value = await instance.balanceOf.call(accounts[2]);
 
-        assert.equal(value, 200);
+        assert.equal(value, 198);
     })
+
+    it("Balance of Charity Account", async () => {
+        const value = await instance.balanceOf.call(accounts[9]);
+
+        assert.equal(value, 3); // Verify The Charity Transfer Occured
+    })   
 })
